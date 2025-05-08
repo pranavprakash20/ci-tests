@@ -21,7 +21,17 @@ function server_run()
   else
     ssh -t ${SSH_OPTIONS} root@${1} "GERRIT_HOST='${GERRIT_HOST}' GERRIT_PROJECT='${GERRIT_PROJECT}' GERRIT_REFSPEC='${GERRIT_REFSPEC}' CENTOS_VERSION='${CENTOS_VERSION}' CENTOS_ARCH='${CENTOS_ARCH}' ${VOLUME_TYPE}_VOLUME='${EXPORT}' YUM_REPO='${YUM_REPO}' ${INCLUDE_TEMPLATE_URL} ${INCLUDE_ACL_PARAM} bash ./$(basename ${2})"
   fi
-
+  ssh -t ${SSH_OPTIONS} root@${1} "dnf install -y wget"
+  ssh -t ${SSH_OPTIONS} root@${1} "rpm -e --nodeps kernel-5.14.0-578.el9.x86_64 kernel-core-5.14.0-578.el9.x86_64 kernel-modules-5.14.0-578.el9.x86_64 kernel-modules-core-5.14.0-578.el9.x86_64"
+  ssh -t ${SSH_OPTIONS} root@${1} "wget https://kojihub.stream.centos.org/kojifiles/packages/kernel/5.14.0/502.el9/x86_64/kernel-5.14.0-502.el9.x86_64.rpm"
+  ssh -t ${SSH_OPTIONS} root@${1} "wget https://kojihub.stream.centos.org/kojifiles/packages/kernel/5.14.0/502.el9/x86_64/kernel-core-5.14.0-502.el9.x86_64.rpm"
+  ssh -t ${SSH_OPTIONS} root@${1} "wget https://kojihub.stream.centos.org/kojifiles/packages/kernel/5.14.0/502.el9/x86_64/kernel-modules-5.14.0-502.el9.x86_64.rpm"
+  ssh -t ${SSH_OPTIONS} root@${1} "wget https://kojihub.stream.centos.org/kojifiles/packages/kernel/5.14.0/502.el9/x86_64/kernel-modules-extra-5.14.0-502.el9.x86_64.rpm"
+  ssh -t ${SSH_OPTIONS} root@${1} "wget https://kojihub.stream.centos.org/kojifiles/packages/kernel/5.14.0/502.el9/x86_64/kernel-modules-core-5.14.0-502.el9.x86_64.rpm"
+  ssh -t ${SSH_OPTIONS} root@${1} "rpm -ivh kernel-*.rpm"
+  ssh -t ${SSH_OPTIONS} root@${1} "uname -r"
+  ssh -t ${SSH_OPTIONS} root@${1} "nohup sudo shutdown -r now 'Scripted reboot' &>/dev/null &"
+  sleep 100
   #RETURN_CODE=$?
 
   #return $RETURN_CODE
